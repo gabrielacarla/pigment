@@ -1,5 +1,7 @@
 package com.pigment.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,8 +13,12 @@ public class Paleta {
     @Id
     private String id;
 
+    @NotBlank(message = "O nome da paleta é obrigatório")
     private String nome;
+
     private String descricao;
+
+    @NotEmpty(message = "A paleta deve ter pelo menos uma cor")
     private List<String> cores;
 
     public Paleta() {

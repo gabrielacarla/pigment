@@ -2,6 +2,7 @@ package com.pigment.controller;
 
 import com.pigment.model.Paleta;
 import com.pigment.service.PaletaService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class PaletaController {
     }
 
     @PostMapping
-    public ResponseEntity<Paleta> criar(@RequestBody Paleta paleta) {
+    public ResponseEntity<Paleta> criar(@Valid @RequestBody Paleta paleta) {
         Paleta novaPaleta = paletaService.criar(paleta);
         return ResponseEntity.ok(novaPaleta);
     }
@@ -38,7 +39,7 @@ public class PaletaController {
     @PutMapping("/{id}")
     public ResponseEntity<Paleta> atualizar(
             @PathVariable String id,
-            @RequestBody Paleta paleta) {
+            @Valid @RequestBody Paleta paleta) {
 
         return paletaService.atualizar(id, paleta)
                 .map(ResponseEntity::ok)
