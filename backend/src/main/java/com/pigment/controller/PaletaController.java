@@ -35,6 +35,16 @@ public class PaletaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Paleta> atualizar(
+            @PathVariable String id,
+            @RequestBody Paleta paleta) {
+
+        return paletaService.atualizar(id, paleta)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable String id) {
         if (paletaService.buscarPorId(id).isEmpty()) {

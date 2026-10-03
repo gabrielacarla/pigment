@@ -28,6 +28,17 @@ public class PaletaService {
         return paletaRepository.findById(id);
     }
 
+    public Optional<Paleta> atualizar(String id, Paleta dadosAtualizados) {
+        return paletaRepository.findById(id)
+                .map(paleta -> {
+                    paleta.setNome(dadosAtualizados.getNome());
+                    paleta.setDescricao(dadosAtualizados.getDescricao());
+                    paleta.setCores(dadosAtualizados.getCores());
+
+                    return paletaRepository.save(paleta);
+                });
+    }
+
     public void excluir(String id) {
         paletaRepository.deleteById(id);
     }
