@@ -1,0 +1,11 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: pigment-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - pigment-mongodb-data:/data/db
+
+volumes:
+  pigment-mongodb-data:
