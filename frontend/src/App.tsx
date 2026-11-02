@@ -6,8 +6,16 @@ import {
   type Paleta,
 } from './services/paletaService'
 
+function normalizarTexto(texto: string) {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
+
 function App() {
   const [paletas, setPaletas] = useState<Paleta[]>([])
+  const [pesquisa, setPesquisa] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [paletaEmEdicao, setPaletaEmEdicao] = useState<Paleta | null>(null)
@@ -20,6 +28,12 @@ function App() {
   const formularioRef = useRef<HTMLDivElement>(null)
   const temporizadorCopiaRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
+  )
+
+  const paletasFiltradas = paletas.filter((paleta) =>
+    normalizarTexto(paleta.nome).includes(
+      normalizarTexto(pesquisa.trim()),
+    ),
   )
 
   function salvarPaleta(paleta: Paleta) {
@@ -64,19 +78,19 @@ function App() {
   async function confirmarExclusao() {
     if (!paletaParaExcluir || excluindo) return
 
+    const id = paletaParaExcluir.id
+
     setExcluindo(true)
     setErroExclusao(null)
 
     try {
-      await excluirPaleta(paletaParaExcluir.id)
+      await excluirPaleta(id)
 
       setPaletas((anteriores) =>
-        anteriores.filter(
-          (paleta) => paleta.id !== paletaParaExcluir.id,
-        ),
+        anteriores.filter((paleta) => paleta.id !== id),
       )
 
-      if (paletaEmEdicao?.id === paletaParaExcluir.id) {
+      if (paletaEmEdicao?.id === id) {
         setPaletaEmEdicao(null)
       }
 
@@ -241,6 +255,26 @@ function App() {
               />
             </div>
 
+            <div className="mt-12">
+              <label
+                htmlFor="pesquisa-paletas"
+                className="mb-3 block text-sm font-medium"
+              >
+                Buscar paletas
+              </label>
+
+              <input
+                id="pesquisa-paletas"
+                type="search"
+                value={pesquisa}
+                onChange={(evento) =>
+                  setPesquisa(evento.target.value)
+                }
+                placeholder="Pesquise pelo nome da paleta..."
+                className="w-full rounded-xl border border-[#DCD7CD] bg-[#F7F5F0] px-5 py-4 text-sm outline-none transition-colors placeholder:text-[#8A8177] focus:border-[#D1495B]"
+              />
+            </div>
+
             {erroCopia && (
               <p role="alert" className="mt-6 text-sm text-[#D1495B]">
                 {erroCopia}
@@ -261,9 +295,15 @@ function App() {
                   Nenhuma paleta cadastrada ainda.
                 </p>
               </div>
+            ) : paletasFiltradas.length === 0 ? (
+              <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
+                <p className="text-[#716C63]">
+                  Nenhuma paleta encontrada para "{pesquisa}".
+                </p>
+              </div>
             ) : (
               <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {paletas.map((paleta) => (
+                {paletasFiltradas.map((paleta) => (
                   <article
                     key={paleta.id}
                     className="overflow-hidden rounded-2xl bg-[#F7F5F0]"
@@ -277,7 +317,9 @@ function App() {
                           <button
                             key={identificador}
                             type="button"
-                            onClick={() => copiarCor(cor, identificador)}
+                            onClick={() =>
+                              copiarCor(cor, identificador)
+                            }
                             title={`Copiar ${cor}`}
                             aria-label={`Copiar cor ${cor}`}
                             className="group relative flex min-w-0 flex-1 cursor-pointer items-center justify-center overflow-hidden focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
@@ -290,7 +332,9 @@ function App() {
                                   : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
                               }`}
                             >
-                              {copiada ? 'Copiado!' : cor.toUpperCase()}
+                              {copiada
+                                ? 'Copiado!'
+                                : cor.toUpperCase()}
                             </span>
                           </button>
                         )
@@ -311,7 +355,9 @@ function App() {
                       <div className="mt-5 flex items-center justify-between gap-4">
                         <p className="text-xs text-[#8A8177]">
                           {paleta.cores.length}{' '}
-                          {paleta.cores.length === 1 ? 'cor' : 'cores'}
+                          {paleta.cores.length === 1
+                            ? 'cor'
+                            : 'cores'}
                         </p>
 
                         <div className="flex items-center gap-4">
