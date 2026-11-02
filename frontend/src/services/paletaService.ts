@@ -3,6 +3,7 @@ export interface Paleta {
   nome: string
   descricao: string | null
   cores: string[]
+  favorita: boolean
 }
 
 export interface NovaPaleta {
@@ -56,6 +57,25 @@ export async function atualizarPaleta(
 
   if (!resposta.ok) {
     throw new Error('Não foi possível atualizar a paleta.')
+  }
+
+  return resposta.json() as Promise<Paleta>
+}
+
+export async function alternarFavorita(
+  id: string,
+): Promise<Paleta> {
+  const resposta = await fetch(
+    `/api/paletas/${encodeURIComponent(id)}/favorita`,
+    {
+      method: 'PATCH',
+    },
+  )
+
+  if (!resposta.ok) {
+    throw new Error(
+      'Não foi possível atualizar o favorito. Tente novamente.',
+    )
   }
 
   return resposta.json() as Promise<Paleta>

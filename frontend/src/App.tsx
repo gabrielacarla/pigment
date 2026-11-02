@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import FormularioPaleta from './components/FormularioPaleta'
 import {
+  alternarFavorita,
   excluirPaleta,
   listarPaletas,
   type Paleta,
@@ -16,6 +17,7 @@ function normalizarTexto(texto: string) {
 function App() {
   const [paletas, setPaletas] = useState<Paleta[]>([])
   const [pesquisa, setPesquisa] = useState('')
+  const [somenteFavoritas, setSomenteFavoritas] = useState(false)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [paletaEmEdicao, setPaletaEmEdicao] = useState<Paleta | null>(null)
@@ -24,17 +26,20 @@ function App() {
   const [erroExclusao, setErroExclusao] = useState<string | null>(null)
   const [corCopiada, setCorCopiada] = useState<string | null>(null)
   const [erroCopia, setErroCopia] = useState<string | null>(null)
+  const [erroFavorito, setErroFavorito] = useState<string | null>(null)
+  const [favoritoEmAtualizacao, setFavoritoEmAtualizacao] = useState<string | null>(null)
 
   const formularioRef = useRef<HTMLDivElement>(null)
-  const temporizadorCopiaRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  )
+  const temporizadorCopiaRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const favoritoEmAtualizacaoRef = useRef<string | null>(null)
 
-  const paletasFiltradas = paletas.filter((paleta) =>
-    normalizarTexto(paleta.nome).includes(
+  const paletasFiltradas = paletas.filter((paleta) => {
+    const correspondePesquisa = normalizarTexto(paleta.nome).includes(
       normalizarTexto(pesquisa.trim()),
-    ),
-  )
+    )
+
+    return correspondePesquisa && (!somenteFavoritas || paleta.favorita)
+  })
 
   function salvarPaleta(paleta: Paleta) {
     if (paletaEmEdicao) {
@@ -101,6 +106,35 @@ function App() {
       )
     } finally {
       setExcluindo(false)
+    }
+  }
+
+  async function atualizarFavorito(id: string) {
+    if (favoritoEmAtualizacaoRef.current !== null) return
+
+    favoritoEmAtualizacaoRef.current = id
+    setFavoritoEmAtualizacao(id)
+    setErroFavorito(null)
+
+    try {
+      const paletaAtualizada = await alternarFavorita(id)
+
+      setPaletas((anteriores) =>
+        anteriores.map((paleta) =>
+          paleta.id === id ? paletaAtualizada : paleta,
+        ),
+      )
+
+      setPaletaEmEdicao((atual) =>
+        atual?.id === id ? paletaAtualizada : atual,
+      )
+    } catch {
+      setErroFavorito(
+        'Não foi possível atualizar o favorito. Tente novamente.',
+      )
+    } finally {
+      favoritoEmAtualizacaoRef.current = null
+      setFavoritoEmAtualizacao(null)
     }
   }
 
@@ -273,7 +307,25 @@ function App() {
                 placeholder="Pesquise pelo nome da paleta..."
                 className="w-full rounded-xl border border-[#DCD7CD] bg-[#F7F5F0] px-5 py-4 text-sm outline-none transition-colors placeholder:text-[#8A8177] focus:border-[#D1495B]"
               />
+
+              <label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={somenteFavoritas}
+                  onChange={(evento) =>
+                    setSomenteFavoritas(evento.target.checked)
+                  }
+                  className="h-4 w-4 cursor-pointer accent-[#D1495B]"
+                />
+                Somente favoritas
+              </label>
             </div>
+
+            {erroFavorito && (
+              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+                {erroFavorito}
+              </p>
+            )}
 
             {erroCopia && (
               <p role="alert" className="mt-6 text-sm text-[#D1495B]">
@@ -298,7 +350,9 @@ function App() {
             ) : paletasFiltradas.length === 0 ? (
               <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
                 <p className="text-[#716C63]">
-                  Nenhuma paleta encontrada para "{pesquisa}".
+                  {somenteFavoritas
+                    ? 'Nenhuma paleta favorita encontrada.'
+                    : `Nenhuma paleta encontrada para "${pesquisa}".`}
                 </p>
               </div>
             ) : (
@@ -308,37 +362,72 @@ function App() {
                     key={paleta.id}
                     className="overflow-hidden rounded-2xl bg-[#F7F5F0]"
                   >
-                    <div className="flex h-44">
-                      {paleta.cores.map((cor, indice) => {
-                        const identificador = `${paleta.id}-${indice}`
-                        const copiada = corCopiada === identificador
+                    <div className="relative">
+                      <div className="flex h-44">
+                        {paleta.cores.map((cor, indice) => {
+                          const identificador = `${paleta.id}-${indice}`
+                          const copiada = corCopiada === identificador
 
-                        return (
-                          <button
-                            key={identificador}
-                            type="button"
-                            onClick={() =>
-                              copiarCor(cor, identificador)
-                            }
-                            title={`Copiar ${cor}`}
-                            aria-label={`Copiar cor ${cor}`}
-                            className="group relative flex min-w-0 flex-1 cursor-pointer items-center justify-center overflow-hidden focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
-                            style={{ backgroundColor: cor }}
-                          >
-                            <span
-                              className={`rounded-full bg-[#25241F]/80 px-3 py-2 text-xs font-medium text-white shadow-sm transition-opacity ${
-                                copiada
-                                  ? 'opacity-100'
-                                  : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
-                              }`}
+                          return (
+                            <button
+                              key={identificador}
+                              type="button"
+                              onClick={() =>
+                                copiarCor(cor, identificador)
+                              }
+                              title={`Copiar ${cor}`}
+                              aria-label={`Copiar cor ${cor}`}
+                              className="group relative flex min-w-0 flex-1 cursor-pointer items-center justify-center overflow-hidden focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
+                              style={{ backgroundColor: cor }}
                             >
-                              {copiada
-                                ? 'Copiado!'
-                                : cor.toUpperCase()}
-                            </span>
-                          </button>
-                        )
-                      })}
+                              <span
+                                className={`rounded-full bg-[#25241F]/80 px-3 py-2 text-xs font-medium text-white shadow-sm transition-opacity ${
+                                  copiada
+                                    ? 'opacity-100'
+                                    : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
+                                }`}
+                              >
+                                {copiada
+                                  ? 'Copiado!'
+                                  : cor.toUpperCase()}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => atualizarFavorito(paleta.id)}
+                        disabled={favoritoEmAtualizacao !== null}
+                        aria-label={
+                          paleta.favorita
+                            ? `Desfavoritar ${paleta.nome}`
+                            : `Favoritar ${paleta.nome}`
+                        }
+                        aria-pressed={paleta.favorita}
+                        title={
+                          paleta.favorita
+                            ? 'Remover dos favoritos'
+                            : 'Adicionar aos favoritos'
+                        }
+                        className="absolute right-4 top-4 z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#F7F5F0] text-[#D1495B] shadow-md transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="22"
+                          height="22"
+                          viewBox="0 0 24 24"
+                          fill={paleta.favorita ? 'currentColor' : 'none'}
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" />
+                        </svg>
+                      </button>
                     </div>
 
                     <div className="p-6">

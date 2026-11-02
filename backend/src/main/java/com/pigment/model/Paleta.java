@@ -21,6 +21,8 @@ public class Paleta {
     @NotEmpty(message = "A paleta deve ter pelo menos uma cor")
     private List<String> cores;
 
+    private boolean favorita;
+
     public Paleta() {
     }
 
@@ -28,6 +30,7 @@ public class Paleta {
         this.nome = nome;
         this.descricao = descricao;
         this.cores = cores;
+        this.favorita = false;
     }
 
     public String getId() {
@@ -56,5 +59,13 @@ public class Paleta {
 
     public void setCores(List<String> cores) {
         this.cores = cores;
+    }
+
+    public boolean isFavorita() {
+        return favorita;
+    }
+
+    public void setFavorita(boolean favorita) {
+        this.favorita = favorita;
     }
 }

@@ -46,6 +46,13 @@ public class PaletaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/favorita")
+    public ResponseEntity<Paleta> alternarFavorita(@PathVariable String id) {
+        return paletaService.alternarFavorita(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable String id) {
         if (paletaService.buscarPorId(id).isEmpty()) {

@@ -17,6 +17,7 @@ public class PaletaService {
     }
 
     public Paleta criar(Paleta paleta) {
+        paleta.setFavorita(false);
         return paletaRepository.save(paleta);
     }
 
@@ -34,6 +35,15 @@ public class PaletaService {
                     paleta.setNome(dadosAtualizados.getNome());
                     paleta.setDescricao(dadosAtualizados.getDescricao());
                     paleta.setCores(dadosAtualizados.getCores());
+
+                    return paletaRepository.save(paleta);
+                });
+    }
+
+    public Optional<Paleta> alternarFavorita(String id) {
+        return paletaRepository.findById(id)
+                .map(paleta -> {
+                    paleta.setFavorita(!paleta.isFavorita());
 
                     return paletaRepository.save(paleta);
                 });
