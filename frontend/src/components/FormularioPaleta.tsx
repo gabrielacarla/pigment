@@ -5,6 +5,11 @@ import {
   type NovaPaleta,
   type Paleta,
 } from '../services/paletaService'
+import {
+  gerarPaleta,
+  tiposHarmonia,
+  type TipoHarmonia,
+} from '../utils/geradorCores'
 
 interface FormularioPaletaProps {
   aoSalvar: (paleta: Paleta) => void
@@ -16,30 +21,6 @@ const coresIniciais = ['#D1495B', '#EDAE49', '#F4E285']
 
 function hexValido(valor: string) {
   return /^#[0-9a-fA-F]{6}$/.test(valor)
-}
-
-function gerarCorAleatoria() {
-  const bytes = new Uint8Array(3)
-  crypto.getRandomValues(bytes)
-
-  return (
-    '#' +
-    Array.from(bytes, (byte) =>
-      byte.toString(16).padStart(2, '0'),
-    )
-      .join('')
-      .toUpperCase()
-  )
-}
-
-function gerarPaletaAleatoria() {
-  const coresGeradas = new Set<string>()
-
-  while (coresGeradas.size < 5) {
-    coresGeradas.add(gerarCorAleatoria())
-  }
-
-  return Array.from(coresGeradas)
 }
 
 function FormularioPaleta({
@@ -54,6 +35,8 @@ function FormularioPaleta({
   const [cores, setCores] = useState<string[]>(
     () => [...(paletaEmEdicao?.cores ?? coresIniciais)],
   )
+  const [tipoHarmonia, setTipoHarmonia] =
+    useState<TipoHarmonia>('aleatoria')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -80,7 +63,7 @@ function FormularioPaleta({
   }
 
   function gerarCores() {
-    setCores(gerarPaletaAleatoria())
+    setCores(gerarPaleta(tipoHarmonia))
     setErro(null)
   }
 
@@ -117,6 +100,7 @@ function FormularioPaleta({
         setNome('')
         setDescricao('')
         setCores([...coresIniciais])
+        setTipoHarmonia('aleatoria')
       }
     } catch {
       setErro('Não foi possível salvar a paleta. Tente novamente.')
@@ -138,7 +122,7 @@ function FormularioPaleta({
         <p className="mt-2 text-sm text-[#716C63]">
           {paletaEmEdicao
             ? 'Altere as informações e as cores da paleta.'
-            : 'Escolha as cores, gere uma combinação aleatória e dê um nome à sua paleta.'}
+            : 'Escolha as cores, gere combinações harmoniosas e dê um nome à sua paleta.'}
         </p>
       </div>
 
@@ -171,20 +155,44 @@ function FormularioPaleta({
         </label>
 
         <div>
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm">Cores</p>
+          <p className="mb-3 text-sm font-medium">Cores</p>
+
+          <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <label className="grid gap-2 text-sm">
+              <span>Tipo de harmonia</span>
+
+              <select
+                value={tipoHarmonia}
+                onChange={(evento) =>
+                  setTipoHarmonia(
+                    evento.target.value as TipoHarmonia,
+                  )
+                }
+                disabled={salvando}
+                className="w-full cursor-pointer rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {tiposHarmonia.map((tipo) => (
+                  <option key={tipo.valor} value={tipo.valor}>
+                    {tipo.nome}
+                  </option>
+                ))}
+              </select>
+            </label>
 
             <button
               type="button"
               onClick={gerarCores}
               disabled={salvando}
-              className="cursor-pointer rounded-full border border-[#D1495B] px-5 py-2 text-sm font-medium text-[#D1495B] transition-colors hover:bg-[#D1495B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-xl bg-[#D1495B] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Gerar cores aleatórias
+              Gerar paleta
             </button>
           </div>
 
-          <div className="flex h-20 overflow-hidden rounded-xl">
+          <div
+            className="flex h-20 overflow-hidden rounded-xl"
+            aria-label="Prévia das cores da paleta"
+          >
             {cores.map((cor, indice) => (
               <div
                 key={indice}
@@ -276,7 +284,7 @@ function FormularioPaleta({
             type="button"
             onClick={aoCancelar}
             disabled={salvando}
-            className="cursor-pointer rounded-full border border-[#DCD7CD] px-7 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-full border border-[#DCD7CD] px-7 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:opacity-50"
           >
             Cancelar
           </button>
