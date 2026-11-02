@@ -1,21 +1,35 @@
 import { useState, type FormEvent } from 'react'
 import {
+  atualizarPaleta,
   criarPaleta,
+  type NovaPaleta,
   type Paleta,
 } from '../services/paletaService'
 
 interface FormularioPaletaProps {
-  aoCriar: (paleta: Paleta) => void
+  aoSalvar: (paleta: Paleta) => void
+  paletaEmEdicao?: Paleta | null
+  aoCancelar?: () => void
 }
 
-function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
-  const [nome, setNome] = useState('')
-  const [descricao, setDescricao] = useState('')
-  const [cores, setCores] = useState([
-    '#D1495B',
-    '#EDAE49',
-    '#F4E285',
-  ])
+const coresIniciais = ['#D1495B', '#EDAE49', '#F4E285']
+
+function hexValido(valor: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(valor)
+}
+
+function FormularioPaleta({
+  aoSalvar,
+  paletaEmEdicao,
+  aoCancelar,
+}: FormularioPaletaProps) {
+  const [nome, setNome] = useState(paletaEmEdicao?.nome ?? '')
+  const [descricao, setDescricao] = useState(
+    paletaEmEdicao?.descricao ?? '',
+  )
+  const [cores, setCores] = useState<string[]>(
+    () => [...(paletaEmEdicao?.cores ?? coresIniciais)],
+  )
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -50,19 +64,31 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
       return
     }
 
+    if (cores.some((cor) => !hexValido(cor))) {
+      setErro('Confira os códigos HEX antes de salvar.')
+      return
+    }
+
+    const dados: NovaPaleta = {
+      nome: nome.trim(),
+      descricao: descricao.trim(),
+      cores: cores.map((cor) => cor.toUpperCase()),
+    }
+
     setSalvando(true)
 
     try {
-      const paleta = await criarPaleta({
-        nome: nome.trim(),
-        descricao: descricao.trim(),
-        cores,
-      })
+      const paleta = paletaEmEdicao
+        ? await atualizarPaleta(paletaEmEdicao.id, dados)
+        : await criarPaleta(dados)
 
-      aoCriar(paleta)
-      setNome('')
-      setDescricao('')
-      setCores(['#D1495B', '#EDAE49', '#F4E285'])
+      aoSalvar(paleta)
+
+      if (!paletaEmEdicao) {
+        setNome('')
+        setDescricao('')
+        setCores([...coresIniciais])
+      }
     } catch {
       setErro('Não foi possível salvar a paleta. Tente novamente.')
     } finally {
@@ -77,10 +103,13 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
     >
       <div className="mb-8">
         <h3 className="text-2xl font-medium tracking-tight">
-          Criar paleta
+          {paletaEmEdicao ? 'Editar paleta' : 'Criar paleta'}
         </h3>
+
         <p className="mt-2 text-sm text-[#716C63]">
-          Escolha as cores e dê um nome à sua combinação.
+          {paletaEmEdicao
+            ? 'Altere as informações e as cores da paleta.'
+            : 'Escolha as cores e dê um nome à sua combinação.'}
         </p>
       </div>
 
@@ -118,7 +147,11 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
               <div
                 key={indice}
                 className="flex-1"
-                style={{ backgroundColor: cor }}
+                style={{
+                  backgroundColor: hexValido(cor)
+                    ? cor
+                    : '#E5E1D8',
+                }}
               />
             ))}
           </div>
@@ -131,24 +164,34 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
               >
                 <input
                   type="color"
-                  value={cor}
+                  value={hexValido(cor) ? cor : '#FFFFFF'}
                   onChange={(evento) =>
                     alterarCor(indice, evento.target.value)
                   }
                   aria-label={`Selecionar cor ${indice + 1}`}
+                  disabled={salvando}
                   className="h-10 w-12 cursor-pointer"
                 />
 
-                <span className="flex-1 text-sm uppercase">
-                  {cor}
-                </span>
+                <input
+                  type="text"
+                  value={cor}
+                  onChange={(evento) =>
+                    alterarCor(indice, evento.target.value)
+                  }
+                  aria-label={`Código HEX da cor ${indice + 1}`}
+                  maxLength={7}
+                  spellCheck={false}
+                  disabled={salvando}
+                  className="min-w-0 flex-1 rounded-lg border border-[#DCD7CD] px-3 py-2 font-mono text-sm uppercase outline-none focus:border-[#D1495B]"
+                />
 
                 <button
                   type="button"
                   onClick={() => removerCor(indice)}
-                  disabled={cores.length === 1}
+                  disabled={cores.length === 1 || salvando}
                   aria-label={`Remover cor ${indice + 1}`}
-                  className="cursor-pointer text-[#8A8177] hover:text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer text-xs text-[#8A8177] hover:text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Remover
                 </button>
@@ -159,7 +202,7 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
           <button
             type="button"
             onClick={adicionarCor}
-            disabled={cores.length >= 8}
+            disabled={cores.length >= 8 || salvando}
             className="mt-4 cursor-pointer text-sm font-medium text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
           >
             + Adicionar cor
@@ -173,13 +216,30 @@ function FormularioPaleta({ aoCriar }: FormularioPaletaProps) {
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={salvando}
-        className="mt-8 rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {salvando ? 'Salvando...' : 'Salvar paleta'}
-      </button>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <button
+          type="submit"
+          disabled={salvando}
+          className="rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {salvando
+            ? 'Salvando...'
+            : paletaEmEdicao
+              ? 'Salvar alterações'
+              : 'Salvar paleta'}
+        </button>
+
+        {paletaEmEdicao && (
+          <button
+            type="button"
+            onClick={aoCancelar}
+            disabled={salvando}
+            className="rounded-full border border-[#DCD7CD] px-7 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+        )}
+      </div>
     </form>
   )
 }

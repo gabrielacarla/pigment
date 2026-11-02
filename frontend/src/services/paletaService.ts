@@ -38,3 +38,25 @@ export async function criarPaleta(
 
   return resposta.json() as Promise<Paleta>
 }
+
+export async function atualizarPaleta(
+  id: string,
+  dados: NovaPaleta,
+): Promise<Paleta> {
+  const resposta = await fetch(
+    `/api/paletas/${encodeURIComponent(id)}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dados),
+    },
+  )
+
+  if (!resposta.ok) {
+    throw new Error('Não foi possível atualizar a paleta.')
+  }
+
+  return resposta.json() as Promise<Paleta>
+}

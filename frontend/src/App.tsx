@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import FormularioPaleta from './components/FormularioPaleta'
 import { listarPaletas, type Paleta } from './services/paletaService'
 
@@ -6,9 +6,35 @@ function App() {
   const [paletas, setPaletas] = useState<Paleta[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
+  const [paletaEmEdicao, setPaletaEmEdicao] = useState<Paleta | null>(null)
 
-  function adicionarPaleta(paleta: Paleta) {
-    setPaletas((anteriores) => [paleta, ...anteriores])
+  const formularioRef = useRef<HTMLDivElement>(null)
+
+  function salvarPaleta(paleta: Paleta) {
+    if (paletaEmEdicao) {
+      setPaletas((anteriores) =>
+        anteriores.map((atual) =>
+          atual.id === paleta.id ? paleta : atual,
+        ),
+      )
+
+      setPaletaEmEdicao(null)
+    } else {
+      setPaletas((anteriores) => [paleta, ...anteriores])
+    }
+  }
+
+  function editarPaleta(paleta: Paleta) {
+    setPaletaEmEdicao(paleta)
+
+    formularioRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
+  function cancelarEdicao() {
+    setPaletaEmEdicao(null)
   }
 
   useEffect(() => {
@@ -123,8 +149,13 @@ function App() {
               inspiração sempre que precisar.
             </p>
 
-            <div className="mt-12">
-              <FormularioPaleta aoCriar={adicionarPaleta} />
+            <div ref={formularioRef} className="mt-12 scroll-mt-8">
+              <FormularioPaleta
+                key={paletaEmEdicao?.id ?? 'nova'}
+                aoSalvar={salvarPaleta}
+                paletaEmEdicao={paletaEmEdicao}
+                aoCancelar={cancelarEdicao}
+              />
             </div>
 
             {carregando ? (
@@ -170,10 +201,20 @@ function App() {
                         </p>
                       )}
 
-                      <p className="mt-5 text-xs text-[#8A8177]">
-                        {paleta.cores.length}{' '}
-                        {paleta.cores.length === 1 ? 'cor' : 'cores'}
-                      </p>
+                      <div className="mt-5 flex items-center justify-between gap-4">
+                        <p className="text-xs text-[#8A8177]">
+                          {paleta.cores.length}{' '}
+                          {paleta.cores.length === 1 ? 'cor' : 'cores'}
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() => editarPaleta(paleta)}
+                          className="cursor-pointer text-sm font-medium text-[#D1495B] transition-colors hover:text-[#A73545]"
+                        >
+                          Editar
+                        </button>
+                      </div>
                     </div>
                   </article>
                 ))}
