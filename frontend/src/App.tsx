@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
+import FormularioPaleta from './components/FormularioPaleta'
 import { listarPaletas, type Paleta } from './services/paletaService'
 
 function App() {
   const [paletas, setPaletas] = useState<Paleta[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
+
+  function adicionarPaleta(paleta: Paleta) {
+    setPaletas((anteriores) => [paleta, ...anteriores])
+  }
 
   useEffect(() => {
     let ativo = true
@@ -43,10 +48,17 @@ function App() {
           </a>
 
           <div className="flex items-center gap-8 text-sm">
-            <a href="#explorar" className="hover:text-[#D1495B]">
+            <a
+              href="#explorar"
+              className="transition-colors hover:text-[#D1495B]"
+            >
               Explorar
             </a>
-            <a href="#sobre" className="hover:text-[#D1495B]">
+
+            <a
+              href="#sobre"
+              className="transition-colors hover:text-[#D1495B]"
+            >
               Sobre
             </a>
           </div>
@@ -110,6 +122,10 @@ function App() {
               Um lugar para reunir combinações de cores e encontrar
               inspiração sempre que precisar.
             </p>
+
+            <div className="mt-12">
+              <FormularioPaleta aoCriar={adicionarPaleta} />
+            </div>
 
             {carregando ? (
               <p className="mt-12 text-[#716C63]">
