@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import FormularioPaleta from './components/FormularioPaleta'
+import { exportarPaletaPNG } from './utils/exportarPaleta'
 import {
   alternarFavorita,
   excluirPaleta,
@@ -27,6 +28,8 @@ function App() {
   const [corCopiada, setCorCopiada] = useState<string | null>(null)
   const [erroCopia, setErroCopia] = useState<string | null>(null)
   const [erroFavorito, setErroFavorito] = useState<string | null>(null)
+  const [erroExportacao, setErroExportacao] = useState<string | null>(null)
+  const [paletaExportando, setPaletaExportando] = useState<string | null>(null)
   const [favoritoEmAtualizacao, setFavoritoEmAtualizacao] = useState<string | null>(null)
 
   const formularioRef = useRef<HTMLDivElement>(null)
@@ -135,6 +138,23 @@ function App() {
     } finally {
       favoritoEmAtualizacaoRef.current = null
       setFavoritoEmAtualizacao(null)
+    }
+  }
+
+  async function baixarPaleta(paleta: Paleta) {
+    if (paletaExportando !== null) return
+
+    setErroExportacao(null)
+    setPaletaExportando(paleta.id)
+
+    try {
+      await exportarPaletaPNG(paleta)
+    } catch {
+      setErroExportacao(
+        'Não foi possível baixar a imagem PNG. Tente novamente.',
+      )
+    } finally {
+      setPaletaExportando(null)
     }
   }
 
@@ -333,6 +353,12 @@ function App() {
               </p>
             )}
 
+            {erroExportacao && (
+              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+                {erroExportacao}
+              </p>
+            )}
+
             {carregando ? (
               <p className="mt-12 text-[#716C63]">
                 Carregando paletas...
@@ -440,6 +466,20 @@ function App() {
                           {paleta.descricao}
                         </p>
                       )}
+
+                      <div className="mt-5">
+                        <button
+                          type="button"
+                          onClick={() => baixarPaleta(paleta)}
+                          disabled={paletaExportando !== null}
+                          aria-label={`Baixar paleta ${paleta.nome} como PNG`}
+                          className="w-full cursor-pointer rounded-full border border-[#D1495B] px-4 py-2.5 text-sm font-medium text-[#D1495B] transition-colors hover:bg-[#D1495B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {paletaExportando === paleta.id
+                            ? 'Preparando PNG...'
+                            : 'Baixar PNG'}
+                        </button>
+                      </div>
 
                       <div className="mt-5 flex items-center justify-between gap-4">
                         <p className="text-xs text-[#8A8177]">
