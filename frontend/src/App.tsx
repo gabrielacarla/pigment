@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import FormularioPaleta from './components/FormularioPaleta'
 import { exportarPaletaPNG } from './utils/exportarPaleta'
+import { baixarPaletaCSS, gerarCSSPaleta } from './utils/exportarCSS'
 import {
   alternarFavorita,
   excluirPaleta,
@@ -29,11 +30,13 @@ function App() {
   const [erroCopia, setErroCopia] = useState<string | null>(null)
   const [erroFavorito, setErroFavorito] = useState<string | null>(null)
   const [erroExportacao, setErroExportacao] = useState<string | null>(null)
+  const [cssCopiado, setCssCopiado] = useState<string | null>(null)
   const [paletaExportando, setPaletaExportando] = useState<string | null>(null)
   const [favoritoEmAtualizacao, setFavoritoEmAtualizacao] = useState<string | null>(null)
 
   const formularioRef = useRef<HTMLDivElement>(null)
   const temporizadorCopiaRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const temporizadorCSSRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const favoritoEmAtualizacaoRef = useRef<string | null>(null)
 
   const paletasFiltradas = paletas.filter((paleta) => {
@@ -158,6 +161,36 @@ function App() {
     }
   }
 
+  async function copiarCSS(paleta: Paleta) {
+    try {
+      await navigator.clipboard.writeText(gerarCSSPaleta(paleta))
+      setErroExportacao(null)
+      setCssCopiado(paleta.id)
+
+      if (temporizadorCSSRef.current !== null) {
+        clearTimeout(temporizadorCSSRef.current)
+      }
+
+      temporizadorCSSRef.current = setTimeout(() => {
+        setCssCopiado(null)
+        temporizadorCSSRef.current = null
+      }, 2000)
+    } catch {
+      setErroExportacao(
+        'Não foi possível copiar o CSS. Verifique a permissão do navegador.',
+      )
+    }
+  }
+
+  function baixarCSS(paleta: Paleta) {
+    try {
+      baixarPaletaCSS(paleta)
+      setErroExportacao(null)
+    } catch {
+      setErroExportacao('Não foi possível baixar o arquivo CSS. Tente novamente.')
+    }
+  }
+
   async function copiarCor(cor: string, identificador: string) {
     try {
       await navigator.clipboard.writeText(cor)
@@ -212,6 +245,9 @@ function App() {
     return () => {
       if (temporizadorCopiaRef.current !== null) {
         clearTimeout(temporizadorCopiaRef.current)
+      }
+      if (temporizadorCSSRef.current !== null) {
+        clearTimeout(temporizadorCSSRef.current)
       }
     }
   }, [])
@@ -478,6 +514,26 @@ function App() {
                           {paletaExportando === paleta.id
                             ? 'Preparando PNG...'
                             : 'Baixar PNG'}
+                        </button>
+                      </div>
+
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => copiarCSS(paleta)}
+                          aria-label={`Copiar CSS da paleta ${paleta.nome}`}
+                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#D1495B] hover:text-[#D1495B]"
+                        >
+                          {cssCopiado === paleta.id ? 'CSS copiado!' : 'Copiar CSS'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => baixarCSS(paleta)}
+                          aria-label={`Baixar CSS da paleta ${paleta.nome}`}
+                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#D1495B] hover:text-[#D1495B]"
+                        >
+                          Baixar CSS
                         </button>
                       </div>
 
