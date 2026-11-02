@@ -18,6 +18,30 @@ function hexValido(valor: string) {
   return /^#[0-9a-fA-F]{6}$/.test(valor)
 }
 
+function gerarCorAleatoria() {
+  const bytes = new Uint8Array(3)
+  crypto.getRandomValues(bytes)
+
+  return (
+    '#' +
+    Array.from(bytes, (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    )
+      .join('')
+      .toUpperCase()
+  )
+}
+
+function gerarPaletaAleatoria() {
+  const coresGeradas = new Set<string>()
+
+  while (coresGeradas.size < 5) {
+    coresGeradas.add(gerarCorAleatoria())
+  }
+
+  return Array.from(coresGeradas)
+}
+
 function FormularioPaleta({
   aoSalvar,
   paletaEmEdicao,
@@ -53,6 +77,11 @@ function FormularioPaleta({
         anteriores.filter((_, posicao) => posicao !== indice),
       )
     }
+  }
+
+  function gerarCores() {
+    setCores(gerarPaletaAleatoria())
+    setErro(null)
   }
 
   async function salvar(evento: FormEvent<HTMLFormElement>) {
@@ -109,7 +138,7 @@ function FormularioPaleta({
         <p className="mt-2 text-sm text-[#716C63]">
           {paletaEmEdicao
             ? 'Altere as informações e as cores da paleta.'
-            : 'Escolha as cores e dê um nome à sua combinação.'}
+            : 'Escolha as cores, gere uma combinação aleatória e dê um nome à sua paleta.'}
         </p>
       </div>
 
@@ -123,6 +152,7 @@ function FormularioPaleta({
             placeholder="Ex.: Jardim de inverno"
             maxLength={80}
             required
+            disabled={salvando}
             className="w-full rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B]"
           />
         </label>
@@ -135,12 +165,24 @@ function FormularioPaleta({
             placeholder="O que inspirou essa paleta?"
             rows={3}
             maxLength={300}
+            disabled={salvando}
             className="w-full resize-none rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B]"
           />
         </label>
 
         <div>
-          <p className="mb-3 text-sm">Cores</p>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm">Cores</p>
+
+            <button
+              type="button"
+              onClick={gerarCores}
+              disabled={salvando}
+              className="cursor-pointer rounded-full border border-[#D1495B] px-5 py-2 text-sm font-medium text-[#D1495B] transition-colors hover:bg-[#D1495B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Gerar cores aleatórias
+            </button>
+          </div>
 
           <div className="flex h-20 overflow-hidden rounded-xl">
             {cores.map((cor, indice) => (
@@ -220,7 +262,7 @@ function FormularioPaleta({
         <button
           type="submit"
           disabled={salvando}
-          className="rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {salvando
             ? 'Salvando...'
@@ -234,7 +276,7 @@ function FormularioPaleta({
             type="button"
             onClick={aoCancelar}
             disabled={salvando}
-            className="rounded-full border border-[#DCD7CD] px-7 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:opacity-50"
+            className="cursor-pointer rounded-full border border-[#DCD7CD] px-7 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancelar
           </button>
