@@ -1,4 +1,39 @@
+import { useEffect, useState } from 'react'
+import { listarPaletas, type Paleta } from './services/paletaService'
+
 function App() {
+  const [paletas, setPaletas] = useState<Paleta[]>([])
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState<string | null>(null)
+
+  useEffect(() => {
+    let ativo = true
+
+    async function carregarPaletas() {
+      try {
+        const dados = await listarPaletas()
+
+        if (ativo) {
+          setPaletas(dados)
+        }
+      } catch {
+        if (ativo) {
+          setErro('Não foi possível carregar as paletas.')
+        }
+      } finally {
+        if (ativo) {
+          setCarregando(false)
+        }
+      }
+    }
+
+    carregarPaletas()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#25241F]">
       <header className="border-b border-[#E5E1D8]">
@@ -8,16 +43,10 @@ function App() {
           </a>
 
           <div className="flex items-center gap-8 text-sm">
-            <a
-              href="#explorar"
-              className="transition-colors hover:text-[#D1495B]"
-            >
+            <a href="#explorar" className="hover:text-[#D1495B]">
               Explorar
             </a>
-            <a
-              href="#sobre"
-              className="transition-colors hover:text-[#D1495B]"
-            >
+            <a href="#sobre" className="hover:text-[#D1495B]">
               Sobre
             </a>
           </div>
@@ -32,8 +61,10 @@ function App() {
             </span>
 
             <h1 className="mt-6 max-w-xl text-5xl font-medium leading-[1.08] tracking-tight md:text-7xl">
-              Toda ideia começa com uma{" "}
-              <span className="font-serif italic text-[#D1495B]">cor.</span>
+              Toda ideia começa com uma{' '}
+              <span className="font-serif italic text-[#D1495B]">
+                cor.
+              </span>
             </h1>
 
             <p className="mt-8 max-w-md text-lg leading-relaxed text-[#716C63]">
@@ -80,11 +111,58 @@ function App() {
               inspiração sempre que precisar.
             </p>
 
-            <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
-              <p className="text-[#716C63]">
-                Suas paletas aparecerão aqui.
+            {carregando ? (
+              <p className="mt-12 text-[#716C63]">
+                Carregando paletas...
               </p>
-            </div>
+            ) : erro ? (
+              <p role="alert" className="mt-12 text-[#D1495B]">
+                {erro}
+              </p>
+            ) : paletas.length === 0 ? (
+              <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
+                <p className="text-[#716C63]">
+                  Nenhuma paleta cadastrada ainda.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {paletas.map((paleta) => (
+                  <article
+                    key={paleta.id}
+                    className="overflow-hidden rounded-2xl bg-[#F7F5F0]"
+                  >
+                    <div className="flex h-44">
+                      {paleta.cores.map((cor, indice) => (
+                        <div
+                          key={`${paleta.id}-${indice}`}
+                          className="flex-1"
+                          style={{ backgroundColor: cor }}
+                          title={cor}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="p-6">
+                      <h3 className="text-xl font-medium">
+                        {paleta.nome}
+                      </h3>
+
+                      {paleta.descricao && (
+                        <p className="mt-2 text-sm leading-relaxed text-[#716C63]">
+                          {paleta.descricao}
+                        </p>
+                      )}
+
+                      <p className="mt-5 text-xs text-[#8A8177]">
+                        {paleta.cores.length}{' '}
+                        {paleta.cores.length === 1 ? 'cor' : 'cores'}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -100,7 +178,10 @@ function App() {
 
       <footer className="border-t border-[#E5E1D8] px-6 py-8 md:px-10">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span className="font-semibold tracking-tight">pigment.</span>
+          <span className="font-semibold tracking-tight">
+            pigment.
+          </span>
+
           <span className="text-xs text-[#8A8177]">
             Feito para explorar cores.
           </span>
