@@ -7,6 +7,7 @@ import {
 } from '../services/paletaService'
 import {
   gerarPaleta,
+  hexValido,
   tiposHarmonia,
   type TipoHarmonia,
 } from '../utils/geradorCores'
@@ -18,10 +19,7 @@ interface FormularioPaletaProps {
 }
 
 const coresIniciais = ['#D1495B', '#EDAE49', '#F4E285']
-
-function hexValido(valor: string) {
-  return /^#[0-9a-fA-F]{6}$/.test(valor)
-}
+const corBaseInicial = '#3975B3'
 
 function FormularioPaleta({
   aoSalvar,
@@ -37,6 +35,8 @@ function FormularioPaleta({
   )
   const [tipoHarmonia, setTipoHarmonia] =
     useState<TipoHarmonia>('aleatoria')
+  const [usarCorBase, setUsarCorBase] = useState(false)
+  const [corBase, setCorBase] = useState(corBaseInicial)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -63,8 +63,20 @@ function FormularioPaleta({
   }
 
   function gerarCores() {
-    setCores(gerarPaleta(tipoHarmonia))
     setErro(null)
+
+    try {
+      const base =
+        tipoHarmonia !== 'aleatoria' && usarCorBase
+          ? corBase
+          : undefined
+
+      setCores(gerarPaleta(tipoHarmonia, base))
+    } catch {
+      setErro(
+        'Informe uma cor-base válida no formato #RRGGBB.',
+      )
+    }
   }
 
   async function salvar(evento: FormEvent<HTMLFormElement>) {
@@ -101,6 +113,8 @@ function FormularioPaleta({
         setDescricao('')
         setCores([...coresIniciais])
         setTipoHarmonia('aleatoria')
+        setUsarCorBase(false)
+        setCorBase(corBaseInicial)
       }
     } catch {
       setErro('Não foi possível salvar a paleta. Tente novamente.')
@@ -157,7 +171,7 @@ function FormularioPaleta({
         <div>
           <p className="mb-3 text-sm font-medium">Cores</p>
 
-          <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="mb-5 grid gap-4">
             <label className="grid gap-2 text-sm">
               <span>Tipo de harmonia</span>
 
@@ -178,6 +192,63 @@ function FormularioPaleta({
                 ))}
               </select>
             </label>
+
+            {tipoHarmonia !== 'aleatoria' && (
+              <div className="rounded-xl border border-[#DCD7CD] bg-white p-4">
+                <label className="flex cursor-pointer items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={usarCorBase}
+                    onChange={(evento) =>
+                      setUsarCorBase(evento.target.checked)
+                    }
+                    disabled={salvando}
+                    className="h-4 w-4 accent-[#D1495B]"
+                  />
+
+                  Usar uma cor-base personalizada
+                </label>
+
+                {usarCorBase && (
+                  <div className="mt-4 flex flex-wrap items-end gap-4">
+                    <label className="grid gap-2 text-sm">
+                      <span>Selecionar cor-base</span>
+                      <input
+                        type="color"
+                        value={
+                          hexValido(corBase)
+                            ? corBase
+                            : corBaseInicial
+                        }
+                        onChange={(evento) =>
+                          setCorBase(
+                            evento.target.value.toUpperCase(),
+                          )
+                        }
+                        disabled={salvando}
+                        className="h-12 w-16 cursor-pointer"
+                      />
+                    </label>
+
+                    <label className="grid flex-1 gap-2 text-sm">
+                      <span>Código HEX</span>
+                      <input
+                        type="text"
+                        value={corBase}
+                        onChange={(evento) =>
+                          setCorBase(evento.target.value)
+                        }
+                        maxLength={7}
+                        spellCheck={false}
+                        disabled={salvando}
+                        placeholder="#3975B3"
+                        className="w-full rounded-xl border border-[#DCD7CD] px-4 py-3 font-mono uppercase outline-none focus:border-[#D1495B]"
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
 
             <button
               type="button"

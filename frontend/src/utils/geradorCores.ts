@@ -14,6 +14,16 @@ export const tiposHarmonia: {
   { valor: 'monocromatica', nome: 'Monocromática' },
 ]
 
+interface CorHSL {
+  matiz: number
+  saturacao: number
+  luminosidade: number
+}
+
+export function hexValido(valor: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(valor)
+}
+
 function numeroAleatorio(maximo: number): number {
   const valores = new Uint32Array(1)
   crypto.getRandomValues(valores)
@@ -75,6 +85,51 @@ function hslParaHex(
   return `#${converter(r)}${converter(g)}${converter(b)}`
 }
 
+function hexParaHsl(hex: string): CorHSL {
+  if (!hexValido(hex)) {
+    throw new Error('Código HEX inválido.')
+  }
+
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+
+  const maximo = Math.max(r, g, b)
+  const minimo = Math.min(r, g, b)
+  const diferenca = maximo - minimo
+
+  let matiz = 0
+  let saturacao = 0
+
+  const luminosidade = (maximo + minimo) / 2
+
+  if (diferenca !== 0) {
+    saturacao =
+      diferenca / (1 - Math.abs(2 * luminosidade - 1))
+
+    switch (maximo) {
+      case r:
+        matiz = ((g - b) / diferenca) % 6
+        break
+
+      case g:
+        matiz = (b - r) / diferenca + 2
+        break
+
+      default:
+        matiz = (r - g) / diferenca + 4
+    }
+
+    matiz *= 60
+  }
+
+  return {
+    matiz: normalizarMatiz(matiz),
+    saturacao: saturacao * 100,
+    luminosidade: luminosidade * 100,
+  }
+}
+
 function gerarCorAleatoria(): string {
   const valores = new Uint8Array(3)
   crypto.getRandomValues(valores)
@@ -99,54 +154,76 @@ function gerarAleatoria(): string[] {
   return Array.from(cores)
 }
 
-function gerarComplementar(): string[] {
-  const matiz = numeroAleatorio(360)
+function obterCorBase(corBase?: string): CorHSL {
+  if (corBase !== undefined) {
+    return hexParaHsl(corBase)
+  }
+
+  return {
+    matiz: numeroAleatorio(360),
+    saturacao: 45 + numeroAleatorio(36),
+    luminosidade: 50,
+  }
+}
+
+function gerarComplementar(corBase?: string): string[] {
+  const { matiz, saturacao, luminosidade } =
+    obterCorBase(corBase)
+
   const oposta = normalizarMatiz(matiz + 180)
 
   return [
-    hslParaHex(matiz, 70, 35),
-    hslParaHex(matiz, 65, 50),
-    hslParaHex(matiz, 55, 70),
-    hslParaHex(oposta, 70, 45),
-    hslParaHex(oposta, 65, 65),
+    hslParaHex(matiz, saturacao, limitar(luminosidade - 20, 10, 90)),
+    hslParaHex(matiz, saturacao, limitar(luminosidade - 10, 10, 90)),
+    corBase ? corBase.toUpperCase() : hslParaHex(matiz, saturacao, luminosidade),
+    hslParaHex(oposta, saturacao, limitar(luminosidade - 5, 10, 90)),
+    hslParaHex(oposta, saturacao, limitar(luminosidade + 15, 10, 90)),
   ]
 }
 
-function gerarAnaloga(): string[] {
-  const matiz = numeroAleatorio(360)
+function gerarAnaloga(corBase?: string): string[] {
+  const { matiz, saturacao, luminosidade } =
+    obterCorBase(corBase)
 
   return [
-    hslParaHex(matiz - 40, 60, 45),
-    hslParaHex(matiz - 20, 65, 55),
-    hslParaHex(matiz, 70, 50),
-    hslParaHex(matiz + 20, 65, 60),
-    hslParaHex(matiz + 40, 55, 70),
+    hslParaHex(matiz - 40, saturacao, luminosidade),
+    hslParaHex(matiz - 20, saturacao, luminosidade),
+    corBase ? corBase.toUpperCase() : hslParaHex(matiz, saturacao, luminosidade),
+    hslParaHex(matiz + 20, saturacao, luminosidade),
+    hslParaHex(matiz + 40, saturacao, luminosidade),
   ]
 }
 
-function gerarMonocromatica(): string[] {
-  const matiz = numeroAleatorio(360)
-  const saturacao = 45 + numeroAleatorio(36)
+function gerarMonocromatica(corBase?: string): string[] {
+  const { matiz, saturacao, luminosidade } =
+    obterCorBase(corBase)
 
   return [
-    hslParaHex(matiz, saturacao, 25),
-    hslParaHex(matiz, saturacao, 38),
-    hslParaHex(matiz, saturacao, 50),
-    hslParaHex(matiz, saturacao, 65),
-    hslParaHex(matiz, saturacao, 80),
+    hslParaHex(matiz, saturacao, limitar(luminosidade - 30, 5, 95)),
+    hslParaHex(matiz, saturacao, limitar(luminosidade - 15, 5, 95)),
+    corBase ? corBase.toUpperCase() : hslParaHex(matiz, saturacao, luminosidade),
+    hslParaHex(matiz, saturacao, limitar(luminosidade + 15, 5, 95)),
+    hslParaHex(matiz, saturacao, limitar(luminosidade + 30, 5, 95)),
   ]
 }
 
-export function gerarPaleta(tipo: TipoHarmonia): string[] {
+export function gerarPaleta(
+  tipo: TipoHarmonia,
+  corBase?: string,
+): string[] {
+  if (corBase !== undefined && !hexValido(corBase)) {
+    throw new Error('Informe uma cor-base válida no formato #RRGGBB.')
+  }
+
   switch (tipo) {
     case 'complementar':
-      return gerarComplementar()
+      return gerarComplementar(corBase)
 
     case 'analoga':
-      return gerarAnaloga()
+      return gerarAnaloga(corBase)
 
     case 'monocromatica':
-      return gerarMonocromatica()
+      return gerarMonocromatica(corBase)
 
     case 'aleatoria':
       return gerarAleatoria()
