@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import FormularioPaleta from './components/FormularioPaleta'
-import { listarPaletas, type Paleta } from './services/paletaService'
+import {
+  excluirPaleta,
+  listarPaletas,
+  type Paleta,
+} from './services/paletaService'
 
 function App() {
   const [paletas, setPaletas] = useState<Paleta[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [paletaEmEdicao, setPaletaEmEdicao] = useState<Paleta | null>(null)
+  const [paletaParaExcluir, setPaletaParaExcluir] = useState<Paleta | null>(null)
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState<string | null>(null)
 
   const formularioRef = useRef<HTMLDivElement>(null)
 
@@ -35,6 +42,47 @@ function App() {
 
   function cancelarEdicao() {
     setPaletaEmEdicao(null)
+  }
+
+  function solicitarExclusao(paleta: Paleta) {
+    setPaletaParaExcluir(paleta)
+    setErroExclusao(null)
+  }
+
+  function cancelarExclusao() {
+    if (excluindo) return
+
+    setPaletaParaExcluir(null)
+    setErroExclusao(null)
+  }
+
+  async function confirmarExclusao() {
+    if (!paletaParaExcluir || excluindo) return
+
+    setExcluindo(true)
+    setErroExclusao(null)
+
+    try {
+      await excluirPaleta(paletaParaExcluir.id)
+
+      setPaletas((anteriores) =>
+        anteriores.filter(
+          (paleta) => paleta.id !== paletaParaExcluir.id,
+        ),
+      )
+
+      if (paletaEmEdicao?.id === paletaParaExcluir.id) {
+        setPaletaEmEdicao(null)
+      }
+
+      setPaletaParaExcluir(null)
+    } catch {
+      setErroExclusao(
+        'Não foi possível excluir a paleta. Tente novamente.',
+      )
+    } finally {
+      setExcluindo(false)
+    }
   }
 
   useEffect(() => {
@@ -207,13 +255,23 @@ function App() {
                           {paleta.cores.length === 1 ? 'cor' : 'cores'}
                         </p>
 
-                        <button
-                          type="button"
-                          onClick={() => editarPaleta(paleta)}
-                          className="cursor-pointer text-sm font-medium text-[#D1495B] transition-colors hover:text-[#A73545]"
-                        >
-                          Editar
-                        </button>
+                        <div className="flex items-center gap-4">
+                          <button
+                            type="button"
+                            onClick={() => editarPaleta(paleta)}
+                            className="cursor-pointer text-sm font-medium text-[#D1495B] transition-colors hover:text-[#A73545]"
+                          >
+                            Editar
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => solicitarExclusao(paleta)}
+                            className="cursor-pointer text-sm font-medium text-[#8A8177] transition-colors hover:text-[#D1495B]"
+                          >
+                            Excluir
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -244,6 +302,62 @@ function App() {
           </span>
         </div>
       </footer>
+
+      {paletaParaExcluir && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="titulo-exclusao"
+            aria-describedby="descricao-exclusao"
+            className="w-full max-w-md rounded-2xl bg-[#F7F5F0] p-8 shadow-xl"
+          >
+            <h2
+              id="titulo-exclusao"
+              className="text-2xl font-medium tracking-tight"
+            >
+              Excluir paleta?
+            </h2>
+
+            <p
+              id="descricao-exclusao"
+              className="mt-4 leading-relaxed text-[#716C63]"
+            >
+              Tem certeza de que deseja excluir a paleta{' '}
+              <strong className="text-[#25241F]">
+                {paletaParaExcluir.nome}
+              </strong>
+              ? Essa ação não poderá ser desfeita.
+            </p>
+
+            {erroExclusao && (
+              <p role="alert" className="mt-4 text-sm text-[#D1495B]">
+                {erroExclusao}
+              </p>
+            )}
+
+            <div className="mt-8 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                onClick={cancelarExclusao}
+                disabled={excluindo}
+                className="cursor-pointer rounded-full border border-[#DCD7CD] px-6 py-3 text-sm font-medium transition-colors hover:bg-[#EAE5DB] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmarExclusao}
+                disabled={excluindo}
+                className="cursor-pointer rounded-full bg-[#D1495B] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {excluindo ? 'Excluindo...' : 'Excluir paleta'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

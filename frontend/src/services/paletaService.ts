@@ -60,3 +60,18 @@ export async function atualizarPaleta(
 
   return resposta.json() as Promise<Paleta>
 }
+
+export async function excluirPaleta(
+  id: string,
+): Promise<void> {
+  const resposta = await fetch(
+    `/api/paletas/${encodeURIComponent(id)}`,
+    {
+      method: 'DELETE',
+    },
+  )
+
+  if (!resposta.ok) {
+    throw new Error('Não foi possível excluir a paleta.')
+  }
+}
