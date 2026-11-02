@@ -14,8 +14,13 @@ function App() {
   const [paletaParaExcluir, setPaletaParaExcluir] = useState<Paleta | null>(null)
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState<string | null>(null)
+  const [corCopiada, setCorCopiada] = useState<string | null>(null)
+  const [erroCopia, setErroCopia] = useState<string | null>(null)
 
   const formularioRef = useRef<HTMLDivElement>(null)
+  const temporizadorCopiaRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  )
 
   function salvarPaleta(paleta: Paleta) {
     if (paletaEmEdicao) {
@@ -85,6 +90,28 @@ function App() {
     }
   }
 
+  async function copiarCor(cor: string, identificador: string) {
+    try {
+      await navigator.clipboard.writeText(cor)
+
+      if (temporizadorCopiaRef.current !== null) {
+        clearTimeout(temporizadorCopiaRef.current)
+      }
+
+      setCorCopiada(identificador)
+      setErroCopia(null)
+
+      temporizadorCopiaRef.current = setTimeout(() => {
+        setCorCopiada(null)
+        temporizadorCopiaRef.current = null
+      }, 2000)
+    } catch {
+      setErroCopia(
+        'Não foi possível copiar a cor. Verifique a permissão do navegador.',
+      )
+    }
+  }
+
   useEffect(() => {
     let ativo = true
 
@@ -110,6 +137,14 @@ function App() {
 
     return () => {
       ativo = false
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (temporizadorCopiaRef.current !== null) {
+        clearTimeout(temporizadorCopiaRef.current)
+      }
     }
   }, [])
 
@@ -206,6 +241,12 @@ function App() {
               />
             </div>
 
+            {erroCopia && (
+              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+                {erroCopia}
+              </p>
+            )}
+
             {carregando ? (
               <p className="mt-12 text-[#716C63]">
                 Carregando paletas...
@@ -228,14 +269,32 @@ function App() {
                     className="overflow-hidden rounded-2xl bg-[#F7F5F0]"
                   >
                     <div className="flex h-44">
-                      {paleta.cores.map((cor, indice) => (
-                        <div
-                          key={`${paleta.id}-${indice}`}
-                          className="flex-1"
-                          style={{ backgroundColor: cor }}
-                          title={cor}
-                        />
-                      ))}
+                      {paleta.cores.map((cor, indice) => {
+                        const identificador = `${paleta.id}-${indice}`
+                        const copiada = corCopiada === identificador
+
+                        return (
+                          <button
+                            key={identificador}
+                            type="button"
+                            onClick={() => copiarCor(cor, identificador)}
+                            title={`Copiar ${cor}`}
+                            aria-label={`Copiar cor ${cor}`}
+                            className="group relative flex min-w-0 flex-1 cursor-pointer items-center justify-center overflow-hidden focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
+                            style={{ backgroundColor: cor }}
+                          >
+                            <span
+                              className={`rounded-full bg-[#25241F]/80 px-3 py-2 text-xs font-medium text-white shadow-sm transition-opacity ${
+                                copiada
+                                  ? 'opacity-100'
+                                  : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
+                              }`}
+                            >
+                              {copiada ? 'Copiado!' : cor.toUpperCase()}
+                            </span>
+                          </button>
+                        )
+                      })}
                     </div>
 
                     <div className="p-6">
