@@ -126,7 +126,7 @@ function FormularioPaleta({
   return (
     <form
       onSubmit={salvar}
-      className="rounded-2xl bg-[#F7F5F0] p-6 md:p-8"
+      className="min-w-0 rounded-2xl bg-[#F7F5F0] p-4 sm:p-6 md:p-8"
     >
       <div className="mb-8">
         <h3 className="text-2xl font-medium tracking-tight">
@@ -140,8 +140,8 @@ function FormularioPaleta({
         </p>
       </div>
 
-      <div className="grid gap-5">
-        <label className="grid gap-2 text-sm">
+      <div className="grid min-w-0 gap-5">
+        <label className="grid min-w-0 gap-2 text-sm">
           <span>Nome da paleta</span>
           <input
             type="text"
@@ -155,7 +155,7 @@ function FormularioPaleta({
           />
         </label>
 
-        <label className="grid gap-2 text-sm">
+        <label className="grid min-w-0 gap-2 text-sm">
           <span>Descrição (opcional)</span>
           <textarea
             value={descricao}
@@ -172,7 +172,7 @@ function FormularioPaleta({
           <p className="mb-3 text-sm font-medium">Cores</p>
 
           <div className="mb-5 grid gap-4">
-            <label className="grid gap-2 text-sm">
+            <label className="grid min-w-0 gap-2 text-sm">
               <span>Tipo de harmonia</span>
 
               <select
@@ -211,7 +211,7 @@ function FormularioPaleta({
 
                 {usarCorBase && (
                   <div className="mt-4 flex flex-wrap items-end gap-4">
-                    <label className="grid gap-2 text-sm">
+                    <label className="grid min-w-0 gap-2 text-sm">
                       <span>Selecionar cor-base</span>
                       <input
                         type="color"
@@ -230,7 +230,7 @@ function FormularioPaleta({
                       />
                     </label>
 
-                    <label className="grid flex-1 gap-2 text-sm">
+                    <label className="grid min-w-0 flex-1 basis-40 gap-2 text-sm">
                       <span>Código HEX</span>
                       <input
                         type="text"
@@ -281,7 +281,7 @@ function FormularioPaleta({
             {cores.map((cor, indice) => (
               <div
                 key={indice}
-                className="flex items-center gap-3 rounded-xl border border-[#DCD7CD] bg-white p-3"
+                className="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-[#DCD7CD] bg-white p-3 sm:flex-nowrap"
               >
                 <input
                   type="color"
@@ -291,7 +291,7 @@ function FormularioPaleta({
                   }
                   aria-label={`Selecionar cor ${indice + 1}`}
                   disabled={salvando}
-                  className="h-10 w-12 cursor-pointer"
+                  className="h-11 w-12 shrink-0 cursor-pointer"
                 />
 
                 <input
@@ -312,7 +312,7 @@ function FormularioPaleta({
                   onClick={() => removerCor(indice)}
                   disabled={cores.length === 1 || salvando}
                   aria-label={`Remover cor ${indice + 1}`}
-                  className="cursor-pointer text-xs text-[#8A8177] hover:text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="shrink-0 cursor-pointer text-xs text-[#8A8177] hover:text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Remover
                 </button>

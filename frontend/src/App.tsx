@@ -253,14 +253,14 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#25241F]">
+    <div className="min-h-screen min-w-0 bg-[#F7F5F0] text-[#25241F]">
       <header className="border-b border-[#E5E1D8]">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-10">
+        <nav className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6 md:px-10 md:py-6">
           <a href="/" className="text-2xl font-semibold tracking-tight">
             pigment<span className="text-[#D1495B]">.</span>
           </a>
 
-          <div className="flex items-center gap-8 text-sm">
+          <div className="flex flex-wrap items-center gap-4 text-sm sm:gap-8">
             <a
               href="#explorar"
               className="transition-colors hover:text-[#D1495B]"
@@ -279,20 +279,20 @@ function App() {
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-7xl items-center gap-14 px-6 py-24 md:grid-cols-2 md:px-10 md:py-36">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-[0.25em] text-[#8A8177]">
+        <section className="mx-auto grid w-full max-w-7xl min-w-0 grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 md:grid-cols-2 md:gap-14 md:px-10 md:py-36">
+          <div className="min-w-0">
+            <span className="block max-w-full text-[11px] font-medium uppercase tracking-[0.15em] text-[#8A8177] sm:text-xs sm:tracking-[0.25em]">
               Um espaço para criar
             </span>
 
-            <h1 className="mt-6 max-w-xl text-5xl font-medium leading-[1.08] tracking-tight md:text-7xl">
+            <h1 className="mt-6 max-w-xl text-[clamp(2.4rem,10vw,4rem)] font-medium leading-[1.1] tracking-tight [overflow-wrap:break-word] md:text-6xl lg:text-7xl">
               Toda ideia começa com uma{' '}
               <span className="font-serif italic text-[#D1495B]">
                 cor.
               </span>
             </h1>
 
-            <p className="mt-8 max-w-md text-lg leading-relaxed text-[#716C63]">
+            <p className="mt-8 max-w-md text-base leading-relaxed text-[#716C63] sm:text-lg">
               Crie paletas, descubra combinações e guarde as cores que
               inspiram suas próximas ideias.
             </p>
@@ -307,7 +307,7 @@ function App() {
           </div>
 
           <div
-            className="grid h-[420px] grid-cols-5 overflow-hidden rounded-2xl md:h-[520px]"
+            className="grid h-64 min-w-0 grid-cols-5 overflow-hidden rounded-2xl sm:h-[360px] md:h-[520px]"
             aria-label="Composição de cinco cores"
           >
             <div className="bg-[#D1495B]" />
@@ -320,14 +320,14 @@ function App() {
 
         <section
           id="explorar"
-          className="border-t border-[#E5E1D8] bg-[#F0EDE6] px-6 py-24 md:px-10"
+          className="border-t border-[#E5E1D8] bg-[#F0EDE6] px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24"
         >
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl min-w-0">
             <span className="text-xs font-medium uppercase tracking-[0.25em] text-[#8A8177]">
               Sua coleção
             </span>
 
-            <h2 className="mt-4 text-4xl font-medium tracking-tight">
+            <h2 className="mt-4 text-3xl font-medium tracking-tight sm:text-4xl">
               Paletas para explorar.
             </h2>
 
@@ -418,11 +418,11 @@ function App() {
                 </p>
               </div>
             ) : (
-              <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-12 grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {paletasFiltradas.map((paleta) => (
                   <article
                     key={paleta.id}
-                    className="overflow-hidden rounded-2xl bg-[#F7F5F0]"
+                    className="min-w-0 overflow-hidden rounded-2xl bg-[#F7F5F0]"
                   >
                     <div className="relative">
                       <div className="flex h-44">
@@ -517,7 +517,7 @@ function App() {
                         </button>
                       </div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-3">
+                      <div className="mt-3 grid grid-cols-1 gap-3 min-[350px]:grid-cols-2">
                         <button
                           type="button"
                           onClick={() => copiarCSS(paleta)}
@@ -537,7 +537,7 @@ function App() {
                         </button>
                       </div>
 
-                      <div className="mt-5 flex items-center justify-between gap-4">
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
                         <p className="text-xs text-[#8A8177]">
                           {paleta.cores.length}{' '}
                           {paleta.cores.length === 1
@@ -571,8 +571,8 @@ function App() {
           </div>
         </section>
 
-        <section id="sobre" className="px-6 py-20 md:px-10">
-          <div className="mx-auto max-w-7xl">
+        <section id="sobre" className="px-4 py-16 sm:px-6 md:px-10 md:py-20">
+          <div className="mx-auto w-full max-w-7xl min-w-0">
             <p className="max-w-2xl text-2xl leading-relaxed tracking-tight md:text-3xl">
               Pigment é um espaço para experimentar, organizar e
               descobrir novas possibilidades através das cores.
@@ -581,8 +581,8 @@ function App() {
         </section>
       </main>
 
-      <footer className="border-t border-[#E5E1D8] px-6 py-8 md:px-10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+      <footer className="border-t border-[#E5E1D8] px-4 py-8 sm:px-6 md:px-10">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <span className="font-semibold tracking-tight">
             pigment.
           </span>
