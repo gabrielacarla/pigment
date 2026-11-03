@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">Pigment — Toda ideia começa com uma cor.</title>
+<desc id="desc">Capa editorial em fundo creme com a frase do Pigment e cinco faixas de cores.</desc>
+<rect width="1200" height="440" rx="20" fill="#F7F5F0"/>
+<text x="72" y="78" fill="#25241F" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700">pigment.</text>
+<line x1="72" x2="1128" y1="103" y2="103" stroke="#E4DED6"/>
+<text x="72" y="166" fill="#625B52" font-family="Arial,Helvetica,sans-serif" font-size="13" letter-spacing="3">UM ESPAÇO PARA CRIAR</text>
+<text x="72" y="240" fill="#25241F" font-family="Arial,Helvetica,sans-serif" font-size="57" font-weight="700">Toda ideia</text>
+<text x="72" y="309" fill="#25241F" font-family="Arial,Helvetica,sans-serif" font-size="57" font-weight="700">começa com uma</text>
+<text x="72" y="377" fill="#A73545" font-family="Georgia,Times New Roman,serif" font-size="67" font-style="italic">cor.</text>
+<defs><clipPath id="palette"><rect x="760" y="139" width="368" height="242" rx="12"/></clipPath></defs>
+<g clip-path="url(#palette)">
+<rect x="760" y="139" width="74" height="242" fill="#A73545"/>
+<rect x="834" y="139" width="74" height="242" fill="#E6A476"/>
+<rect x="908" y="139" width="74" height="242" fill="#F0D9AD"/>
+<rect x="982" y="139" width="74" height="242" fill="#A1AE9B"/>
+<rect x="1056" y="139" width="72" height="242" fill="#6A818A"/>
+</g>
+</svg>

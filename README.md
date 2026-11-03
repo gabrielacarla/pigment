@@ -1,78 +1,92 @@
 <div align="center">
 
-# pigment.
+<img src="docs/images/pigment-banner.svg" alt="Pigment — Toda ideia começa com uma cor. Capa em tons creme, vermelho, pêssego, amarelo, verde e azul." width="100%" />
 
-**Toda ideia começa com uma *cor*.**
+<br />
 
-Crie paletas, descubra combinações e guarde as cores que inspiram suas próximas ideias.
+Um espaço para experimentar combinações, descobrir novas possibilidades e guardar as cores que merecem ficar.
+
+**Explore · Crie · Organize · Exporte**
+
+[Conhecer o Pigment](https://pigment-six.vercel.app/)
 
 </div>
 
-<br />
+---
 
-![Captura de tela completa da versão atual do Pigment, mostrando a apresentação, o criador de paletas, a coleção e o rodapé](docs/images/pigment-pagina-completa.jpg)
+> **Prévia online:** o link apresenta a interface do Pigment hospedada na Vercel. Como a API Spring Boot e o MongoDB não estão hospedados, as funções de carregar, salvar, editar e excluir paletas não estão disponíveis nessa demonstração. Para utilizar a aplicação completa, execute o projeto localmente seguindo as instruções abaixo.
 
-<p align="center"><sub>O Pigment em funcionamento no ambiente local — captura real da página completa.</sub></p>
+## Um ponto de partida para novas ideias
+
+Às vezes, uma ideia começa com uma referência. Outras vezes, com um único tom.
+
+O **Pigment** foi criado para tornar esse processo mais simples: explorar cores, testar harmonias e transformar combinações em paletas que você pode salvar e reutilizar. Sem precisar sair da mesma interface para criar, organizar e exportar.
+
+## O caminho das cores
+
+### 01 / Descobrir
+
+Comece do zero com uma paleta aleatória ou escolha uma direção: **complementar, análoga ou monocromática**. Se já tiver uma cor em mente, use seu código HEX como ponto de partida.
+
+### 02 / Dar forma
+
+Ajuste as cores, escolha um nome e acrescente uma descrição. Cada paleta passa a fazer parte da sua coleção, onde pode ser **pesquisada, editada, favoritada ou excluída**.
+
+### 03 / Levar adiante
+
+Encontrou a combinação certa? **Copie os códigos HEX** ou exporte a paleta em **PNG** e **CSS** para usar em outro projeto.
 
 ---
 
-### Um espaço para criar
+## Design que deixa a cor falar
 
-O Pigment é um lugar para experimentar cores sem complicar o processo criativo. Você pode partir de uma combinação aleatória, explorar harmonias ou ajustar cada tom até encontrar uma paleta que faça sentido para sua ideia.
+![Paleta de cores do Pigment](docs/images/pigment-cores.svg)
 
-Depois, dê um nome, escreva uma descrição e guarde a combinação na sua coleção.
+O Pigment usa uma interface clara, com tipografia expressiva, espaços generosos e detalhes discretos em vermelho fechado. O objetivo é dar protagonismo às paletas, sem competir visualmente com elas.
 
-### Da inspiração ao próximo projeto
+O layout foi pensado para diferentes tamanhos de tela, com atenção à navegação e à acessibilidade.
 
-**01 — Explore.** Gere paletas aleatórias ou use harmonias complementares, análogas e monocromáticas. Também é possível começar a partir de um código HEX.
+**[Explorar a interface online](https://pigment-six.vercel.app/)**
 
-**02 — Organize.** Crie, edite, pesquise e exclua paletas. Marque suas preferidas para encontrá-las com facilidade.
+## Construído em duas partes
 
-**03 — Use.** Copie códigos HEX e exporte suas combinações em **PNG** ou **CSS** para levar as cores a outros projetos.
+| Camada | Tecnologias |
+| :--- | :--- |
+| **Interface** | React · TypeScript · Vite · Tailwind CSS |
+| **API REST** | Java 21 · Spring Boot · Spring Data MongoDB |
+| **Persistência** | MongoDB |
+| **Ambiente local** | Docker Compose · Maven · npm |
 
-### Feito para deixar as cores em primeiro plano
-
-O design combina fundos claros, tipografia direta, bastante espaço livre e pequenos acentos de cor. A interface foi desenvolvida para funcionar em diferentes tamanhos de tela, com atenção à acessibilidade.
-
-### Por trás das cores
-
-| | Tecnologias |
-| :-- | :-- |
-| **Interface** | React, TypeScript, Vite e Tailwind CSS |
-| **API** | Java, Spring Boot e Spring Data MongoDB |
-| **Banco de dados** | MongoDB |
-| **Ambiente de desenvolvimento** | Docker Compose, Maven e npm |
-
-O frontend consome a API REST do backend pelas rotas `/api/paletas`.
+A interface conversa com o backend por meio das rotas `/api/paletas`. As paletas ficam armazenadas no MongoDB, para que a coleção continue disponível entre as sessões.
 
 <details>
-<summary><strong>Executar localmente</strong></summary>
+<summary><strong>Como executar no seu computador</strong></summary>
 
 <br />
 
-**Pré-requisitos:** Java 21, Node.js compatível com o Vite, Docker com Compose e Maven (ou Maven Wrapper, se disponível no projeto).
+Você vai precisar de **Java 21**, **Node.js compatível com o Vite**, **Docker com Compose** e **Maven** (ou o Maven Wrapper, se disponível).
+
+Clone o repositório:
 
 ```bash
 git clone https://github.com/gabrielacarla/pigment.git
 cd pigment
 ```
 
-**1. Banco de dados**, na raiz do projeto:
+**1. Inicie o MongoDB**, na raiz do projeto:
 
 ```bash
 docker compose up -d
 ```
 
-**2. Backend**, em outro terminal:
+**2. Inicie a API**, em outro terminal:
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-Se o projeto incluir Maven Wrapper, você também pode usar `./mvnw spring-boot:run` (Linux/macOS) ou `mvnw.cmd spring-boot:run` (Windows).
-
-**3. Frontend**, em outro terminal, a partir da raiz:
+**3. Inicie a interface**, em um terceiro terminal, a partir da raiz do projeto:
 
 ```bash
 cd frontend
@@ -80,7 +94,7 @@ npm ci
 npm run dev
 ```
 
-Abra `http://localhost:5173` no navegador.
+Acesse **http://localhost:5173**.
 
 Para verificar o frontend:
 
@@ -89,6 +103,8 @@ npm run lint
 npm run build
 ```
 
+> O projeto está configurado para desenvolvimento local. A API utiliza o MongoDB local e o Vite encaminha as chamadas `/api` para o backend em `localhost:8080`.
+
 </details>
 
 <details>
@@ -96,13 +112,13 @@ npm run build
 
 <br />
 
-| Método | Rota | Descrição |
-| :-- | :-- | :-- |
-| `GET` | `/api/paletas` | Lista as paletas |
-| `POST` | `/api/paletas` | Cria uma paleta |
-| `PUT` | `/api/paletas/{id}` | Atualiza uma paleta |
-| `PATCH` | `/api/paletas/{id}/favorita` | Alterna o estado de favorita |
-| `DELETE` | `/api/paletas/{id}` | Exclui uma paleta |
+| Método | Endpoint | Ação |
+| :--- | :--- | :--- |
+| `GET` | `/api/paletas` | Listar paletas |
+| `POST` | `/api/paletas` | Criar paleta |
+| `PUT` | `/api/paletas/{id}` | Editar paleta |
+| `PATCH` | `/api/paletas/{id}/favorita` | Alternar favorita |
+| `DELETE` | `/api/paletas/{id}` | Excluir paleta |
 
 </details>
 
@@ -112,8 +128,8 @@ npm run build
 
 **pigment.**
 
-<sub>Feito para explorar cores.</sub>
+*As próximas ideias também começam por aqui.*
 
-<sub>Desenvolvido por [Gabriela Carla](https://github.com/gabrielacarla).</sub>
+<sub>Projeto desenvolvido por <a href="https://github.com/gabrielacarla">Gabriela Carla</a>.</sub>
 
 </div>
