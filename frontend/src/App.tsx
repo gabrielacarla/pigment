@@ -257,20 +257,20 @@ function App() {
       <header className="border-b border-[#E5E1D8]">
         <nav className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6 md:px-10 md:py-6">
           <a href="/" className="text-2xl font-semibold tracking-tight">
-            pigment<span className="text-[#D1495B]">.</span>
+            pigment<span className="text-[#A73545]">.</span>
           </a>
 
           <div className="flex flex-wrap items-center gap-4 text-sm sm:gap-8">
             <a
               href="#explorar"
-              className="transition-colors hover:text-[#D1495B]"
+              className="transition-colors hover:text-[#A73545]"
             >
               Explorar
             </a>
 
             <a
               href="#sobre"
-              className="transition-colors hover:text-[#D1495B]"
+              className="transition-colors hover:text-[#A73545]"
             >
               Sobre
             </a>
@@ -281,25 +281,25 @@ function App() {
       <main>
         <section className="mx-auto grid w-full max-w-7xl min-w-0 grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 md:grid-cols-2 md:gap-14 md:px-10 md:py-36">
           <div className="min-w-0">
-            <span className="block max-w-full text-[11px] font-medium uppercase tracking-[0.15em] text-[#8A8177] sm:text-xs sm:tracking-[0.25em]">
+            <span className="block max-w-full text-[11px] font-medium uppercase tracking-[0.15em] text-[#625B52] sm:text-xs sm:tracking-[0.25em]">
               Um espaço para criar
             </span>
 
             <h1 className="mt-6 max-w-xl text-[clamp(2.4rem,10vw,4rem)] font-medium leading-[1.1] tracking-tight [overflow-wrap:break-word] md:text-6xl lg:text-7xl">
               Toda ideia começa com uma{' '}
-              <span className="font-serif italic text-[#D1495B]">
+              <span className="font-serif italic text-[#A73545]">
                 cor.
               </span>
             </h1>
 
-            <p className="mt-8 max-w-md text-base leading-relaxed text-[#716C63] sm:text-lg">
+            <p className="mt-8 max-w-md text-base leading-relaxed text-[#625B52] sm:text-lg">
               Crie paletas, descubra combinações e guarde as cores que
               inspiram suas próximas ideias.
             </p>
 
             <a
               href="#explorar"
-              className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#25241F] px-7 py-4 text-sm font-medium text-white transition-colors hover:bg-[#D1495B]"
+              className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#25241F] px-7 py-4 text-sm font-medium text-white transition-colors hover:bg-[#A73545]"
             >
               Explorar paletas
               <span aria-hidden="true">↗</span>
@@ -308,9 +308,10 @@ function App() {
 
           <div
             className="grid h-64 min-w-0 grid-cols-5 overflow-hidden rounded-2xl sm:h-[360px] md:h-[520px]"
+            role="img"
             aria-label="Composição de cinco cores"
           >
-            <div className="bg-[#D1495B]" />
+            <div className="bg-[#A73545]" />
             <div className="bg-[#E7A977]" />
             <div className="bg-[#F0D8A8]" />
             <div className="bg-[#A7B5A0]" />
@@ -323,7 +324,7 @@ function App() {
           className="border-t border-[#E5E1D8] bg-[#F0EDE6] px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24"
         >
           <div className="mx-auto w-full max-w-7xl min-w-0">
-            <span className="text-xs font-medium uppercase tracking-[0.25em] text-[#8A8177]">
+            <span className="text-xs font-medium uppercase tracking-[0.25em] text-[#625B52]">
               Sua coleção
             </span>
 
@@ -331,7 +332,7 @@ function App() {
               Paletas para explorar.
             </h2>
 
-            <p className="mt-4 max-w-lg leading-relaxed text-[#716C63]">
+            <p className="mt-4 max-w-lg leading-relaxed text-[#625B52]">
               Um lugar para reunir combinações de cores e encontrar
               inspiração sempre que precisar.
             </p>
@@ -361,7 +362,7 @@ function App() {
                   setPesquisa(evento.target.value)
                 }
                 placeholder="Pesquise pelo nome da paleta..."
-                className="w-full rounded-xl border border-[#DCD7CD] bg-[#F7F5F0] px-5 py-4 text-sm outline-none transition-colors placeholder:text-[#8A8177] focus:border-[#D1495B]"
+                className="w-full rounded-xl border border-[#DCD7CD] bg-[#F7F5F0] px-5 py-4 text-sm outline-none transition-colors placeholder:text-[#625B52] focus:border-[#A73545]"
               />
 
               <label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-sm font-medium">
@@ -378,40 +379,40 @@ function App() {
             </div>
 
             {erroFavorito && (
-              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+              <p role="alert" className="mt-6 text-sm text-[#A73545]">
                 {erroFavorito}
               </p>
             )}
 
             {erroCopia && (
-              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+              <p role="alert" className="mt-6 text-sm text-[#A73545]">
                 {erroCopia}
               </p>
             )}
 
             {erroExportacao && (
-              <p role="alert" className="mt-6 text-sm text-[#D1495B]">
+              <p role="alert" className="mt-6 text-sm text-[#A73545]">
                 {erroExportacao}
               </p>
             )}
 
             {carregando ? (
-              <p className="mt-12 text-[#716C63]">
+              <p className="mt-12 text-[#625B52]">
                 Carregando paletas...
               </p>
             ) : erro ? (
-              <p role="alert" className="mt-12 text-[#D1495B]">
+              <p role="alert" className="mt-12 text-[#A73545]">
                 {erro}
               </p>
             ) : paletas.length === 0 ? (
               <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
-                <p className="text-[#716C63]">
+                <p className="text-[#625B52]">
                   Nenhuma paleta cadastrada ainda.
                 </p>
               </div>
             ) : paletasFiltradas.length === 0 ? (
               <div className="mt-12 rounded-2xl border border-dashed border-[#CBC5BA] px-6 py-16 text-center">
-                <p className="text-[#716C63]">
+                <p className="text-[#625B52]">
                   {somenteFavoritas
                     ? 'Nenhuma paleta favorita encontrada.'
                     : `Nenhuma paleta encontrada para "${pesquisa}".`}
@@ -473,7 +474,7 @@ function App() {
                             ? 'Remover dos favoritos'
                             : 'Adicionar aos favoritos'
                         }
-                        className="absolute right-4 top-4 z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#F7F5F0] text-[#D1495B] shadow-md transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60"
+                        className="absolute right-4 top-4 z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#F7F5F0] text-[#A73545] shadow-md transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -498,7 +499,7 @@ function App() {
                       </h3>
 
                       {paleta.descricao && (
-                        <p className="mt-2 text-sm leading-relaxed text-[#716C63]">
+                        <p className="mt-2 text-sm leading-relaxed text-[#625B52]">
                           {paleta.descricao}
                         </p>
                       )}
@@ -509,7 +510,7 @@ function App() {
                           onClick={() => baixarPaleta(paleta)}
                           disabled={paletaExportando !== null}
                           aria-label={`Baixar paleta ${paleta.nome} como PNG`}
-                          className="w-full cursor-pointer rounded-full border border-[#D1495B] px-4 py-2.5 text-sm font-medium text-[#D1495B] transition-colors hover:bg-[#D1495B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full cursor-pointer rounded-full border border-[#A73545] px-4 py-2.5 text-sm font-medium text-[#A73545] transition-colors hover:bg-[#A73545] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {paletaExportando === paleta.id
                             ? 'Preparando PNG...'
@@ -522,7 +523,7 @@ function App() {
                           type="button"
                           onClick={() => copiarCSS(paleta)}
                           aria-label={`Copiar CSS da paleta ${paleta.nome}`}
-                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#D1495B] hover:text-[#D1495B]"
+                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#A73545] hover:text-[#A73545]"
                         >
                           {cssCopiado === paleta.id ? 'CSS copiado!' : 'Copiar CSS'}
                         </button>
@@ -531,14 +532,14 @@ function App() {
                           type="button"
                           onClick={() => baixarCSS(paleta)}
                           aria-label={`Baixar CSS da paleta ${paleta.nome}`}
-                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#D1495B] hover:text-[#D1495B]"
+                          className="cursor-pointer rounded-full border border-[#DCD7CD] px-3 py-2.5 text-sm font-medium transition-colors hover:border-[#A73545] hover:text-[#A73545]"
                         >
                           Baixar CSS
                         </button>
                       </div>
 
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-                        <p className="text-xs text-[#8A8177]">
+                        <p className="text-xs text-[#625B52]">
                           {paleta.cores.length}{' '}
                           {paleta.cores.length === 1
                             ? 'cor'
@@ -549,7 +550,7 @@ function App() {
                           <button
                             type="button"
                             onClick={() => editarPaleta(paleta)}
-                            className="cursor-pointer text-sm font-medium text-[#D1495B] transition-colors hover:text-[#A73545]"
+                            className="cursor-pointer text-sm font-medium text-[#A73545] transition-colors hover:text-[#A73545]"
                           >
                             Editar
                           </button>
@@ -557,7 +558,7 @@ function App() {
                           <button
                             type="button"
                             onClick={() => solicitarExclusao(paleta)}
-                            className="cursor-pointer text-sm font-medium text-[#8A8177] transition-colors hover:text-[#D1495B]"
+                            className="cursor-pointer text-sm font-medium text-[#625B52] transition-colors hover:text-[#A73545]"
                           >
                             Excluir
                           </button>
@@ -587,7 +588,7 @@ function App() {
             pigment.
           </span>
 
-          <span className="text-xs text-[#8A8177]">
+          <span className="text-xs text-[#625B52]">
             Feito para explorar cores.
           </span>
         </div>
@@ -611,7 +612,7 @@ function App() {
 
             <p
               id="descricao-exclusao"
-              className="mt-4 leading-relaxed text-[#716C63]"
+              className="mt-4 leading-relaxed text-[#625B52]"
             >
               Tem certeza de que deseja excluir a paleta{' '}
               <strong className="text-[#25241F]">
@@ -621,7 +622,7 @@ function App() {
             </p>
 
             {erroExclusao && (
-              <p role="alert" className="mt-4 text-sm text-[#D1495B]">
+              <p role="alert" className="mt-4 text-sm text-[#A73545]">
                 {erroExclusao}
               </p>
             )}
@@ -640,7 +641,7 @@ function App() {
                 type="button"
                 onClick={confirmarExclusao}
                 disabled={excluindo}
-                className="cursor-pointer rounded-full bg-[#D1495B] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-full bg-[#A73545] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {excluindo ? 'Excluindo...' : 'Excluir paleta'}
               </button>

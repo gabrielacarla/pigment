@@ -133,7 +133,7 @@ function FormularioPaleta({
           {paletaEmEdicao ? 'Editar paleta' : 'Criar paleta'}
         </h3>
 
-        <p className="mt-2 text-sm text-[#716C63]">
+        <p className="mt-2 text-sm text-[#625B52]">
           {paletaEmEdicao
             ? 'Altere as informações e as cores da paleta.'
             : 'Escolha as cores, gere combinações harmoniosas e dê um nome à sua paleta.'}
@@ -151,7 +151,7 @@ function FormularioPaleta({
             maxLength={80}
             required
             disabled={salvando}
-            className="w-full rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B]"
+            className="w-full rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#A73545]"
           />
         </label>
 
@@ -164,7 +164,7 @@ function FormularioPaleta({
             rows={3}
             maxLength={300}
             disabled={salvando}
-            className="w-full resize-none rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B]"
+            className="w-full resize-none rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#A73545]"
           />
         </label>
 
@@ -183,7 +183,7 @@ function FormularioPaleta({
                   )
                 }
                 disabled={salvando}
-                className="w-full cursor-pointer rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full cursor-pointer rounded-xl border border-[#DCD7CD] bg-white px-4 py-3 outline-none focus:border-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {tiposHarmonia.map((tipo) => (
                   <option key={tipo.valor} value={tipo.valor}>
@@ -242,7 +242,7 @@ function FormularioPaleta({
                         spellCheck={false}
                         disabled={salvando}
                         placeholder="#3975B3"
-                        className="w-full rounded-xl border border-[#DCD7CD] px-4 py-3 font-mono uppercase outline-none focus:border-[#D1495B]"
+                        className="w-full rounded-xl border border-[#DCD7CD] px-4 py-3 font-mono uppercase outline-none focus:border-[#A73545]"
                       />
                     </label>
                   </div>
@@ -254,7 +254,7 @@ function FormularioPaleta({
               type="button"
               onClick={gerarCores}
               disabled={salvando}
-              className="cursor-pointer rounded-xl bg-[#D1495B] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-xl bg-[#A73545] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Gerar paleta
             </button>
@@ -262,6 +262,7 @@ function FormularioPaleta({
 
           <div
             className="flex h-20 overflow-hidden rounded-xl"
+            role="img"
             aria-label="Prévia das cores da paleta"
           >
             {cores.map((cor, indice) => (
@@ -304,7 +305,7 @@ function FormularioPaleta({
                   maxLength={7}
                   spellCheck={false}
                   disabled={salvando}
-                  className="min-w-0 flex-1 rounded-lg border border-[#DCD7CD] px-3 py-2 font-mono text-sm uppercase outline-none focus:border-[#D1495B]"
+                  className="min-w-0 flex-1 rounded-lg border border-[#DCD7CD] px-3 py-2 font-mono text-sm uppercase outline-none focus:border-[#A73545]"
                 />
 
                 <button
@@ -312,7 +313,7 @@ function FormularioPaleta({
                   onClick={() => removerCor(indice)}
                   disabled={cores.length === 1 || salvando}
                   aria-label={`Remover cor ${indice + 1}`}
-                  className="shrink-0 cursor-pointer text-xs text-[#8A8177] hover:text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="shrink-0 cursor-pointer text-xs text-[#625B52] hover:text-[#A73545] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Remover
                 </button>
@@ -324,7 +325,7 @@ function FormularioPaleta({
             type="button"
             onClick={adicionarCor}
             disabled={cores.length >= 8 || salvando}
-            className="mt-4 cursor-pointer text-sm font-medium text-[#D1495B] disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-4 cursor-pointer text-sm font-medium text-[#A73545] disabled:cursor-not-allowed disabled:opacity-40"
           >
             + Adicionar cor
           </button>
@@ -332,7 +333,7 @@ function FormularioPaleta({
       </div>
 
       {erro && (
-        <p role="alert" className="mt-5 text-sm text-[#D1495B]">
+        <p role="alert" className="mt-5 text-sm text-[#A73545]">
           {erro}
         </p>
       )}
@@ -341,7 +342,7 @@ function FormularioPaleta({
         <button
           type="submit"
           disabled={salvando}
-          className="cursor-pointer rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#D1495B] disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-full bg-[#25241F] px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A73545] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {salvando
             ? 'Salvando...'
